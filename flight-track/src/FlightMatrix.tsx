@@ -51,8 +51,9 @@ export function FlightMatrix({ callsign, origin, destination, altitude, heading,
 
     // Draw flight info on the right side starting at x=32
     ctx.fillText(`${callsign}`, 20, 6);
-    ctx.fillText(`${origin} -> ${destination}`, 20, 13);
+    ctx.fillText(`${origin.slice(1,4)} -> ${destination.slice(1,4)}`, 20, 13);
     ctx.fillText(`${altitude !== null ? `${altitude} ft ${speed}` : 'Unknown'}kts`, 20, 20);
+    console.log(`${altitude !== null ? `${altitude} ft ${speed}` : 'Unknown'}kts`);
   }, [callsign, origin, destination, altitude, heading, airline, loading]);
 
   return (

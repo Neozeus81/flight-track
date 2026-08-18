@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+
+	_ "github.com/lib/pq"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,6 +114,7 @@ func handleClosestAircraft(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 func main() {
+	//connStr := "user=postgres password=yourpassword dbname=yourdbname sslmode=disable"
 	http.HandleFunc("/hello", helloHandler)
 	http.HandleFunc("/api/closest", handleClosestAircraft)
 	http.HandleFunc("/api/odinfo", getODinfo)

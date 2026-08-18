@@ -53,7 +53,7 @@ function App() {
           setCallsign(aircraft.flight || 'N/A');
           setAltitude(aircraft.alt_baro || null);
           setHeading(aircraft.nav_heading || null);
-          setSpeed(aircraft.gs|| null);
+          setSpeed(aircraft.gs || null);
           console.log('Aircraft flight', aircraft.flight);
           console.log('Aircraft position set to:', [aircraft.lat, aircraft.lon]);
           try {
@@ -94,7 +94,7 @@ function App() {
   return (
     <div>
       <FlightInfo callsign={callsign} origin={origin} destination={destination} altitude={altitude} heading={heading} speed={speed} airline={airline} loading={loading} />
-      <FlightMatrix callsign={callsign} origin={origin} destination={destination} altitude={altitude} heading={heading} speed airline={airline} loading={loading} />
+      <FlightMatrix callsign={callsign} origin={origin} destination={destination} altitude={altitude} heading={heading} speed={speed} airline={airline} loading={loading} />
       <MapContainer center={defaultPosition} zoom={13} style={{ height: '100vh', width: '100%' }}>
       <TileLayer
         attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
