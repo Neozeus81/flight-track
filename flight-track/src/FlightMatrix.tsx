@@ -22,14 +22,17 @@ export function FlightMatrix({ callsign, origin, destination, altitude, heading,
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Disable image smoothing for sharp rendering
+    ctx.imageSmoothingEnabled = false;
+
     // Clear canvas (black background)
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 64, 32);
+    ctx.fillRect(0, 0, 320, 180);
 
     // Draw airline logo on the left if available
     if (airline && imageRef.current && imageRef.current.complete) {
       try {
-        ctx.drawImage(imageRef.current, 2, 2, 16, 16);
+        ctx.drawImage(imageRef.current, 10, 10, 80, 80);
       } catch (e) {
         // Image not loaded yet
       }
@@ -37,23 +40,22 @@ export function FlightMatrix({ callsign, origin, destination, altitude, heading,
 
     // Green text (like retro displays)
     ctx.fillStyle = '#ffffff';
-    ctx.font = '6px Tiny5';
+    ctx.font = 'bold 30px monospace';
 
     if (loading) {
-      ctx.fillText('LOADING...', 32, 10);
+      ctx.fillText('LOADING...', 120, 60);
       return;
     }
 
     if (!callsign) {
-      ctx.fillText('NO AIRCRAFT', 32, 10);
+      ctx.fillText('NO AIRCRAFT', 120, 60);
       return;
     }
 
-    // Draw flight info on the right side starting at x=32
-    ctx.fillText(`${callsign}`, 20, 6);
-    ctx.fillText(`${origin.slice(1,4)} -> ${destination.slice(1,4)}`, 20, 13);
-    ctx.fillText(`${altitude !== null ? `${altitude} ft ${speed}` : 'Unknown'}kts`, 20, 20);
-    console.log(`${altitude !== null ? `${altitude} ft ${speed}` : 'Unknown'}kts`);
+    // Draw flight info on the right side starting at x=100
+    ctx.fillText(`${callsign}`, 100, 30);
+    ctx.fillText(`${origin.slice(1, 4)} -> ${destination.slice(1, 4)}`, 100, 65);
+    ctx.fillText(`${altitude !== null ? `${altitude} ft ${speed}` : 'Unknown'}kts`, 100, 100);
   }, [callsign, origin, destination, altitude, heading, airline, loading]);
 
   return (
@@ -75,14 +77,14 @@ export function FlightMatrix({ callsign, origin, destination, altitude, heading,
       )}
       <canvas
         ref={canvasRef}
-        width={64}
-        height={32}
+        width={320}
+        height={180}
         style={{
           border: '2px solid #333',
           backgroundColor: '#000',
-          imageRendering: 'auto',
-          width: '640px',
-          height: '320px',
+          imageRendering: 'pixelated',
+          width: '320px',
+          height: '180px',
         }}
       />
     </>
