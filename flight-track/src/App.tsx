@@ -232,6 +232,9 @@ function App() {
                 setMapLon(lon.toFixed(6));
               }}
             />
+            <Marker position={[mapLat, mapLon]}>
+              <Popup>Clicked Here</Popup>
+            </Marker>
 
             <Marker position={defaultPosition}>
               <Popup>Point of intrest</Popup>
