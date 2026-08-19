@@ -190,11 +190,11 @@ function App() {
     <div style={{ display: 'flex', height: '100vh', gap: '10px', padding: '10px 0' }}>
       {/* Left 1/3 - TrackingPos */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        <TrackingPosi 
-          mapLat={mapLat} 
-          mapLon={mapLon} 
-          setMapLat={setMapLat} 
-          setMapLon={setMapLon} 
+        <TrackingPosi
+          mapLat={mapLat}
+          mapLon={mapLon}
+          setMapLat={setMapLat}
+          setMapLon={setMapLon}
           trackingPositions={trackingPositions}
           setTrackingPositions={setTrackingPositions}
           trackingResults={trackingResults}
@@ -234,7 +234,7 @@ function App() {
             />
 
             <Marker position={defaultPosition}>
-              <Popup>Search location</Popup>
+              <Popup>Point of intrest</Popup>
             </Marker>
 
             {!loading && !error && (
@@ -242,6 +242,15 @@ function App() {
                 <Popup>{callsign}</Popup>
               </Marker>
             )}
+
+            {trackingPositions.map((position) => (
+              <Marker
+                key={position.id}
+                position={[position.lat, position.lon]}
+              >
+                <Popup>Tracking Position [{position.lat.toFixed(4)}, {position.lon.toFixed(4)}]</Popup>
+              </Marker>
+            ))}
 
             {error && (
               <div style={{ color: 'red', padding: '10px' }}>
