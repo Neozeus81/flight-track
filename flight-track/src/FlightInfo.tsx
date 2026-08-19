@@ -19,7 +19,7 @@ export function FlightInfo({ callsign, origin, destination, altitude, heading, s
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Current Flight</h2>
+      <h2 style={styles.title}>Closest Flight</h2>
       <div style={styles.callsignRowContainer}>
         {airline && (
           <img
@@ -58,7 +58,7 @@ export function FlightInfo({ callsign, origin, destination, altitude, heading, s
 
 const styles = {
   container: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#003478',
     padding: '20px',
     borderRadius: '8px',
     margin: '10px',
@@ -73,21 +73,21 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     padding: '8px 0',
-    borderBottom: '1px solid #ddd',
+    borderBottom: '1px solid #070707',
   } as React.CSSProperties,
   label: {
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fcf6f6',
   } as React.CSSProperties,
   value: {
-    color: '#666',
+    color: '#0ebce8',
   } as React.CSSProperties,
   callsignRowContainer: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
     padding: '8px 0',
-    borderBottom: '1px solid #ddd',
+    borderBottom: '1px solid #020000',
   } as React.CSSProperties,
   callsignRow: {
     display: 'flex',
