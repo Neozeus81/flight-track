@@ -2,20 +2,21 @@ import './App.css'
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import { useState, useEffect } from 'react';
-import { FlightInfo } from './FlightInfo';
+//import { FlightInfo } from './FlightInfo';
 import { FlightMatrix } from './FlightMatrix';
 import { TrackingPosi } from './TrackingPosi';
 
-interface Aircraft {
+/*interface Aircraft {
   lat: number;
   lon: number;
   callsign?: string;
   altitude?: number;
 }
+  */
 
 function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lon: number) => void }) {
   useMapEvents({
-    click: (e) => {
+    click: (e: any) => {
       onMapClick(e.latlng.lat, e.latlng.lng);
     },
   });
@@ -232,7 +233,7 @@ function App() {
                 setMapLon(lon.toFixed(6));
               }}
             />
-            <Marker position={[mapLat, mapLon]}>
+            <Marker position={[Number(mapLat), Number(mapLon)]}>
               <Popup>Clicked Here</Popup>
             </Marker>
 

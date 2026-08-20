@@ -3,12 +3,13 @@ interface FlightInfoProps {
   origin: string;
   destination: string;
   altitude: number | null;
+  speed: number | null;
   heading: number | null;
   airline?: { name: string; icao: string; iata: string };
   loading: boolean;
 }
 
-export function FlightInfo({ callsign, origin, destination, altitude, heading, speed,airline, loading }: FlightInfoProps) {
+export function FlightInfo({ callsign, origin, destination, altitude, heading, speed ,airline, loading }: FlightInfoProps) {
   if (loading) {
     return <div style={styles.container}>Loading flight data...</div>;
   }
