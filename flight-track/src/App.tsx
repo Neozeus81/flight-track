@@ -39,7 +39,9 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [mapLat, setMapLat] = useState<string>('');
   const [mapLon, setMapLon] = useState<string>('');
-  const [trackingPositions, setTrackingPositions] = useState<any[]>([]);
+  const [trackingPositions, setTrackingPositions] = useState<any[]>([
+    { id: 0, lat: defaultPosition[0], lon: defaultPosition[1], isMainLocation: true },
+  ]);
   const [trackingResults, setTrackingResults] = useState<any[]>([]);
 
   useEffect(() => {
@@ -108,84 +110,80 @@ function App() {
 
   const searchTrackingPositions = async () => {
     if (trackingPositions.length === 0) {
-      console.warn('No tracking positions to search');
       return;
     }
 
-    const results: any[] = [];
+    // Fetch all positions concurrently so results reflect the same moment in time
+    const results = await Promise.all(
+      trackingPositions.map(async (position) => {
+        try {
+          const lat = position.lat;
+          const lon = position.lon;
+          const distance = 250;
 
-    for (const position of trackingPositions) {
-      try {
-        const lat = position.lat;
-        const lon = position.lon;
-        const distance = 250;
+          const url = `http://localhost:8080/api/closest?lat=${lat}&lon=${lon}&distance=${distance}`;
 
-        const url = `http://localhost:8080/api/closest?lat=${lat}&lon=${lon}&distance=${distance}`;
-        console.log(`Fetching aircraft near [${lat}, ${lon}]`);
+          const response = await fetch(url);
+          if (!response.ok) {
+            console.warn(`Failed to fetch for position [${lat}, ${lon}]`);
+            return null;
+          }
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          console.warn(`Failed to fetch for position [${lat}, ${lon}]`);
-          continue;
-        }
+          const data = await response.json();
+          const aircraft = data.ac[0];
 
-        const data = await response.json();
-        const aircraft = data.ac[0];
+          if (!aircraft || !aircraft.lat || !aircraft.lon) {
+            return null;
+          }
 
-        if (aircraft && aircraft.lat && aircraft.lon) {
-          // Fetch aircraft details
+          const base = {
+            positionId: position.id,
+            searchPosition: { lat, lon },
+            callsign: aircraft.flight || 'N/A',
+            aircraftLat: aircraft.lat,
+            aircraftLon: aircraft.lon,
+            altitude: aircraft.alt_baro || null,
+            heading: aircraft.nav_heading || null,
+            speed: aircraft.gs || null,
+          };
+
           try {
             const odResponse = await fetch(`http://localhost:8080/api/odinfo?callsign=${aircraft.flight}`);
             if (odResponse.ok) {
               const odData = await odResponse.json();
-              results.push({
-                searchPosition: { lat, lon },
-                callsign: aircraft.flight || 'N/A',
-                aircraftLat: aircraft.lat,
-                aircraftLon: aircraft.lon,
-                altitude: aircraft.alt_baro || null,
-                heading: aircraft.nav_heading || null,
-                speed: aircraft.gs || null,
+              return {
+                ...base,
                 origin: odData.response.flightroute.origin.icao_code || 'Unknown',
                 destination: odData.response.flightroute.destination.icao_code || 'Unknown',
                 airline: odData.response.flightroute.airline || null,
-              });
-            } else {
-              results.push({
-                searchPosition: { lat, lon },
-                callsign: aircraft.flight || 'N/A',
-                aircraftLat: aircraft.lat,
-                aircraftLon: aircraft.lon,
-                altitude: aircraft.alt_baro || null,
-                heading: aircraft.nav_heading || null,
-                speed: aircraft.gs || null,
-                origin: 'Unknown',
-                destination: 'Unknown',
-              });
+              };
             }
           } catch (odError) {
             console.warn(`Failed to fetch details for ${aircraft.flight}`);
-            results.push({
-              searchPosition: { lat, lon },
-              callsign: aircraft.flight || 'N/A',
-              aircraftLat: aircraft.lat,
-              aircraftLon: aircraft.lon,
-              altitude: aircraft.alt_baro || null,
-              heading: aircraft.nav_heading || null,
-              speed: aircraft.gs || null,
-              origin: 'Unknown',
-              destination: 'Unknown',
-            });
           }
+
+          return { ...base, origin: 'Unknown', destination: 'Unknown' };
+        } catch (err) {
+          console.error(`Error searching position:`, err);
+          return null;
         }
-      } catch (err) {
-        console.error(`Error searching position:`, err);
-      }
+      })
+    );
+
+    setTrackingResults(results.filter((r) => r !== null));
+  };
+
+  // Keep each tracked location's closest flight continuously updated
+  useEffect(() => {
+    if (trackingPositions.length === 0) {
+      setTrackingResults([]);
+      return;
     }
 
-    setTrackingResults(results);
-    console.log('Tracking results:', results);
-  };
+    searchTrackingPositions();
+    const interval = setInterval(searchTrackingPositions, 5000);
+    return () => clearInterval(interval);
+  }, [trackingPositions]);
 
   return (
     <div style={{ display: 'flex', height: '100vh', gap: '10px', padding: '10px 0' }}>
@@ -199,7 +197,6 @@ function App() {
           trackingPositions={trackingPositions}
           setTrackingPositions={setTrackingPositions}
           trackingResults={trackingResults}
-          onSearch={searchTrackingPositions}
         />
       </div>
 
